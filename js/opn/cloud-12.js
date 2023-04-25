@@ -43,7 +43,6 @@
 	function decrypt(p1){
 		let p=new opn.Promise();
 		p1.then((request)=>{
-			
 			var data ;
 			var iv;
 			if(request.responseType=='arraybuffer'){
@@ -78,7 +77,7 @@
 				p.callThen({object:{response},event:request})
 				else
 				p.callThen({object:{responseText:new TextDecoder().decode(response)},event:request})
-			}).catch(()=>{
+			}).catch((e)=>{
 				p.callOtherwise();
 			})
 		}).otherwise(()=>{
