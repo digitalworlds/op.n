@@ -952,7 +952,8 @@ opnCloud.prototype.getObjectStatic=function(oid)
 	var o=new opnCloudObject();
 	var id=new opnCloudObjectID(oid);
 	opn.http(id.getStaticURL('info.json')).then(function(request){
-		var r=JSON.parse(request.responseText);
+		var r=JSON.parse("{\"data\":["+request.responseText+"]}");
+		r=opnCloud.progress(r.data);
 		if(r['.SUCCESS']===false)
 		{
 			if(r['.COMMENTS']=='Authentication required.')
