@@ -28,6 +28,15 @@
 	<script type="text/javascript">
 	var my_program=function()
 	{
+		if(opn.static && location.search.indexOf('?file/')==0)
+		{
+			let end=location.search.indexOf('/',6);
+			if(end==-1)end=undefined;
+			let oid=location.search.substring(6,end);
+			if(oid.indexOf('@')==-1)oid=oid+opn.cloudhost_;
+			new opn.App().load(oid);
+			return;
+		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
 		new opn.App().load(opn.landing);	
 	}
