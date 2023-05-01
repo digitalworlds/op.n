@@ -314,7 +314,8 @@ opnCloudObjectID.prototype.getURL=function(extension){
  * @return string A string with the URL of the icon of this cloud object.
  */
 opnCloudObjectID.prototype.getIconURL=function(){
-	return this.getURL('icon.png');
+	if(opn.static) return this.getStaticURL('icon.png');
+	else return this.getURL('icon.png');
 }
 
 /**
@@ -322,7 +323,8 @@ opnCloudObjectID.prototype.getIconURL=function(){
  * @return string A string with the URL of the preview image of this cloud object.
  */
 opnCloudObjectID.prototype.getPreviewURL=function(){
-	return this.getURL('preview.jpg');
+	if(opn.static) return this.getStaticURL('preview.jpg');
+	else return this.getURL('preview.jpg');
 }
 
 
