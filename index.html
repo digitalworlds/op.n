@@ -40,6 +40,7 @@
 			new opn.App().load(opn.viewers["OS"]).then((Assets)=>{
 				var os=new Assets.opnOS({parentDiv:opn.getScreen()});	
 				var app=os.openApp({initapp:true,fullscreen:false,appID:oid});
+				app.getWindow().maximize();
 			});
 			return;
 		}
