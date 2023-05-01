@@ -34,13 +34,51 @@
 			let command='';
 			if(end==-1)end=undefined;
 			else command=location.search.substring(end);
+			let embed=false;if(command.indexOf('/embed')==0)embed=true;
 			let oid=location.search.substring(6,end);
 			if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
 			
-			new opn.App().load(opn.viewers["OS"]).then((Assets)=>{
-				var os=new Assets.opnOS({parentDiv:opn.getScreen()});	
-				var app=os.openApp({initapp:true,fullscreen:false,appID:oid});
-				app.getWindow().maximize();
+			opn.cloud.getObject(oid).whenReady().then((o)=>{
+				document.title=o.getSystemProperty('NAME');
+				let icon=o.getSystemProperty('ICON');
+				if(icon){
+					let links=document.getElementsByTagName('link');
+					for(let i=0;i<links.length;i++)links[i].href=o.id.getIconURL();
+				}
+				new opn.App().load(opn.viewers['OS']).then((Assets)=>{
+					let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
+					
+					let app=null;
+					
+					if(command.indexOf('/code')==0){
+						app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
+					}
+					else if(command.indexOf('/api')==0){
+						app=os.openApp({initapp:true,appID:opn.viewers['API'],input:oid});
+					}else{
+						
+						if(o.getSystemProperty('OPEN')){
+							app=os.openApp({initapp:true,appID:o.getSystemProperty('OPEN'),input:oid});
+						} else if (o.getSystemProperty('CLASS')){
+							let c=o.getSystemProperty('CLASS');
+							if(c=='List'){
+								app=os.openApp({initapp:true,appID:opn.viewer['List'],input:oid});
+							}else if(c=='Image'){
+								app=os.openApp({initapp:true,appID:opn.viewer['Image'],input:oid});
+							}else if(c=='User'){
+								app=os.openApp({initapp:true,appID:opn.viewer['User'],input:oid});
+							}else{
+								app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
+							}
+						}
+						else {
+							app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
+						}
+					}
+					app.getWindow().maximize();
+				});
+			}).otherwise(()=>{
+				console.log('This object is not available');
 			});
 			return;
 		}
@@ -49,5 +87,5 @@
 	}
 	</script>
 </head>
-<body onload="opn.run(my_program)" style="margin:0px;background:#fff;color:#888;"></body>
+<body onload="opn.run(my_program,{loadingLogo:true})" style="margin:0px;background:#fff;color:#888;"></body>
 </html>
