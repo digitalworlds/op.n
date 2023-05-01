@@ -31,10 +31,16 @@
 		if(opn.static && location.search.indexOf('?file/')==0)
 		{
 			let end=location.search.indexOf('/',6);
+			let command='';
 			if(end==-1)end=undefined;
+			else command=location.search.substring(end);
 			let oid=location.search.substring(6,end);
 			if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
-			new opn.App().load(oid);
+			
+			new opn.App().load(opn.viewers["OS"]).then((Assets)=>{
+				var os=new Assets.opnOS({parentDiv:opn.getScreen()});	
+				var app=os.openApp({initapp:true,fullscreen:false,appID:oid});
+			});
 			return;
 		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
