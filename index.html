@@ -33,7 +33,7 @@
 			let end=location.search.indexOf('/',6);
 			if(end==-1)end=undefined;
 			let oid=location.search.substring(6,end);
-			if(oid.indexOf('@')==-1)oid=oid+opn.cloudhost_;
+			if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
 			new opn.App().load(oid);
 			return;
 		}
