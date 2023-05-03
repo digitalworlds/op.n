@@ -28,58 +28,77 @@
 	<script type="text/javascript">
 	var my_program=function()
 	{
-		if(opn.static && location.search.indexOf('?file/')==0)
+		if(opn.static && (location.search.indexOf('?file/')==0||location.search.indexOf('?app/')==0))
 		{
-			let end=location.search.indexOf('/',6);
-			let command='';
-			if(end==-1)end=undefined;
-			else command=location.search.substring(end);
-			let embed=false;if(command.indexOf('/embed')==0)embed=true;
-			let oid=location.search.substring(6,end);
-			if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
-			
-			opn.cloud.getObject(oid).whenReady().then((o)=>{
-				document.title=o.getSystemProperty('NAME');
-				let icon=o.getSystemProperty('ICON');
-				if(icon){
-					let links=document.getElementsByTagName('link');
-					for(let i=0;i<links.length;i++)links[i].href=o.id.getIconURL();
-				}
-				new opn.App().load(opn.viewers['OS']).then((Assets)=>{
-					let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
-					
-					let app=null;
-					
-					if(command.indexOf('/code')==0){
-						app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
+			let loadapp=()=>{
+				if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
+				
+				opn.cloud.getObject(oid).whenReady().then((o)=>{
+					document.title=o.getSystemProperty('NAME');
+					let icon=o.getSystemProperty('ICON');
+					if(icon){
+						let links=document.getElementsByTagName('link');
+						for(let i=0;i<links.length;i++)links[i].href=o.id.getIconURL();
 					}
-					else if(command.indexOf('/api')==0){
-						app=os.openApp({initapp:true,appID:opn.viewers['API'],input:oid});
-					}else{
+					new opn.App().load(opn.viewers['OS']).then((Assets)=>{
+						let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
 						
-						if(o.getSystemProperty('OPEN')){
-							app=os.openApp({initapp:true,appID:o.getSystemProperty('OPEN'),input:oid});
-						} else if (o.getSystemProperty('CLASS')){
-							let c=o.getSystemProperty('CLASS');
-							if(c=='List'){
-								app=os.openApp({initapp:true,appID:opn.viewer['List'],input:oid});
-							}else if(c=='Image'){
-								app=os.openApp({initapp:true,appID:opn.viewer['Image'],input:oid});
-							}else if(c=='User'){
-								app=os.openApp({initapp:true,appID:opn.viewer['User'],input:oid});
-							}else{
+						let app=null;
+						
+						if(command.indexOf('/code')==0){
+							app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
+						}
+						else if(command.indexOf('/api')==0){
+							app=os.openApp({initapp:true,appID:opn.viewers['API'],input:oid});
+						}else{
+							
+							if(o.getSystemProperty('OPEN')){
+								app=os.openApp({initapp:true,appID:o.getSystemProperty('OPEN'),input:oid});
+							} else if (o.getSystemProperty('CLASS')){
+								let c=o.getSystemProperty('CLASS');
+								if(c=='List'){
+									app=os.openApp({initapp:true,appID:opn.viewer['List'],input:oid});
+								}else if(c=='Image'){
+									app=os.openApp({initapp:true,appID:opn.viewer['Image'],input:oid});
+								}else if(c=='User'){
+									app=os.openApp({initapp:true,appID:opn.viewer['User'],input:oid});
+								}else{
+									app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
+								}
+							}
+							else {
 								app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
 							}
 						}
-						else {
-							app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
-						}
-					}
-					app.getWindow().maximize();
+						app.getWindow().maximize();
+					});
+				}).otherwise(()=>{
+					console.log('This object is not available');
 				});
-			}).otherwise(()=>{
-				console.log('This object is not available');
-			});
+			}
+			var command='';
+			var oid='';
+			var embed=false;
+			if(location.search.indexOf('?file/')==0)
+			{
+				let end=location.search.indexOf('/',6);
+				if(end==-1)end=undefined;
+				else command=location.search.substring(end);
+				if(command.indexOf('/embed')==0)embed=true;
+				oid=location.search.substring(6,end);
+				loadapp();
+			}else if(location.search.indexOf('?app/')==0)
+			{
+				let end=location.search.indexOf('/',5);
+				if(end==-1)end=undefined;
+				else command=location.search.substring(end);
+				if(command.indexOf('/embed')==0)embed=true;
+				let app_name=location.search.substring(5,end);
+				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name).then((request)=>{
+					oid=request.responseText;
+					loadapp();
+				})
+			}
 			return;
 		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
