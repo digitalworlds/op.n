@@ -95,7 +95,7 @@
 				if(command.indexOf('/embed')==0)embed=true;
 				let app_name=location.search.substring(5,end);
 				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name).then((request)=>{
-					oid=request.responseText;
+					oid=request.responseText.split("\n")[0];
 					loadapp();
 				})
 			}
