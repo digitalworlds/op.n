@@ -419,6 +419,7 @@ function opnCloud(){
 	
 					info.platform=navigator.platform;
 					info.userAgent=navigator.userAgent;
+					info.url=location.href;
 							
 					if(performance&&performance.memory&&performance.memory.jsHeapSizeLimit){
 						info.jsHeapSizeLimit=performance.memory.jsHeapSizeLimit;	
