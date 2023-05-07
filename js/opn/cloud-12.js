@@ -1715,8 +1715,8 @@ opnCloudObject.prototype.uploadImage=function(options)
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
 					encrypt(new Uint8Array(r.response)).then((b)=>{
-					pr.preview=b;
-					pr.oneMoreDone();
+						pr.preview=b;
+						pr.oneMoreDone();
 					});
 				});
 
@@ -1742,15 +1742,19 @@ opnCloudObject.prototype.uploadImage=function(options)
 				var url=makeThumbnail(img,256,'PNG',false);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
-					pr.icon=new Uint8Array(r.response);
-					pr.oneMoreDone();
+					encrypt(new Uint8Array(r.response)).then((b)=>{
+						pr.icon=b;
+						pr.oneMoreDone();
+					});
 				});
 
 				var url=makeThumbnail(img,1024,'JPG',true);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
-					pr.preview=new Uint8Array(r.response);
-					pr.oneMoreDone();
+					encrypt(new Uint8Array(r.response)).then((b)=>{
+						pr.preview=b;
+						pr.oneMoreDone();
+					});
 				});
 
 				pr.image=new Uint8Array(file);
