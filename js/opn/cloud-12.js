@@ -40,6 +40,90 @@
 	var SERVER_KEY=null;
 	var CLIENT_KEY=null;
 	
+	function renew_connection(){
+		let p=new opn.Promise();
+		
+		let key = window.crypto.getRandomValues(new Uint8Array(16));
+	
+	crypto.subtle.importKey(
+  		"raw",
+  		key.buffer,
+  		"AES-CTR",
+  		false,
+  		["encrypt", "decrypt"]
+		).then((key_encoded)=>{
+			CLIENT_KEY=key_encoded;
+			
+		let data={key:btoa(String.fromCharCode.apply(null, new Uint8Array(key)))};
+		var cid=new URLSearchParams(window.location.search).get("CID");
+		if(cid)data.CID=cid;
+		
+		commandJWT("connect",data).then((request)=>{
+			
+				var r=JSON.parse(request.responseText);
+				if(r['.SUCCESS'])
+				{
+					CID_COOKIE=r['.DATA']['CID'];
+					console.log("Connected: "+CID_COOKIE);
+					
+					 
+					let info={};
+					let canvas=document.createElement("canvas");
+					let gl=canvas.getContext("experimental-webgl");
+					if(gl!=null){
+						let params={RENDERER:1,VENDOR:1,VERSION:1,MAX_COMBINED_TEXTURE_IMAGE_UNITS:1,MAX_TEXTURE_SIZE:1,MAX_VARYING_VECTORS:1,MAX_VERTEX_ATTRIBS:1,MAX_VERTEX_UNIFORM_VECTORS:1};
+						
+						for(let name in params){
+							info[name]=gl.getParameter(gl[name]);
+						}
+						let dbgRenderInfo=gl.getExtension("WEBGL_debug_renderer_info");
+						if(dbgRenderInfo!=null){
+							info.RENDERER2=gl.getParameter(dbgRenderInfo.UNMASKED_RENDERER_WEBGL);
+							info.VENDOR2=gl.getParameter(dbgRenderInfo.UNMASKED_VENDOR_WEBGL);
+						}
+					}
+	
+					info.platform=navigator.platform;
+					info.userAgent=navigator.userAgent;
+					info.url=location.href;
+							
+					if(performance&&performance.memory&&performance.memory.jsHeapSizeLimit){
+						info.jsHeapSizeLimit=performance.memory.jsHeapSizeLimit;	
+					}
+						
+					
+					opn.cloud.command('clientinfo',info).then((request)=>{
+						var r=JSON.parse(request.responseText);
+						if(r['.SUCCESS'])
+						{
+							p.callThen();
+						}
+						else
+						{
+							p.callOtherwise();
+						}
+						
+					}).otherwise(()=>{
+						//network failed
+						p.callOtherwise();
+					})
+					
+					
+				}
+				else 
+				{
+					p.callOtherwise();
+				}
+			
+		}).otherwise(()=>{
+			//network failed
+			p.callOtherwise();
+		})
+	})
+		
+		return p;
+	}
+	
 	function decrypt(p1){
 		let p=new opn.Promise();
 		p1.then((request)=>{
@@ -51,6 +135,12 @@
 	    		data=new Uint8Array(request.response,16,request.response.byteLength-16);
 			}
 			else{
+				
+				if(request.responseText.indexOf("{")==0){
+					p.callOtherwise({object:request,event:request});
+					return;
+				}
+				
 				var b= window.atob(request.responseText);
 	    		var len = b.length;
 	    		iv=new Uint8Array(16);
@@ -79,6 +169,7 @@
 				p.callThen({object:{responseText:new TextDecoder().decode(response)},event:request})
 			}).catch((e)=>{
 				p.callOtherwise();
+				throw(e);
 			})
 		}).otherwise(()=>{
 			//network failed
@@ -111,8 +202,9 @@
 			else
 			p.callThen({object:mergedArray});
 		
-		}).catch(()=>{
+		}).catch((e)=>{
 			p.callOtherwise();
+			throw(e);
 		})
 		
 		return p;
@@ -144,7 +236,7 @@
 		    window.crypto.subtle.importKey("jwk", rsaPublicKey, {name: "RSA-OAEP", hash: {name: "SHA-256"}}, true, ["encrypt"]).then((key)=>{ 
 		        SERVER_KEY=key;
 		        send();
-		    }).catch((e)=>{p.callCatch({event:e})});
+		    }).catch((e)=>{p.callCatch({event:e});throw(e);});
 		}).catch((e)=>{p.callCatch({event:e})});
 		else send();
 		
@@ -377,82 +469,10 @@ function opnCloud(){
 		return;
 	}
 	
-	let key = window.crypto.getRandomValues(new Uint8Array(16));
-	
-	crypto.subtle.importKey(
-  		"raw",
-  		key.buffer,
-  		"AES-CTR",
-  		false,
-  		["encrypt", "decrypt"]
-		).then((key_encoded)=>{
-			CLIENT_KEY=key_encoded;
-			
-		let data={key:btoa(String.fromCharCode.apply(null, new Uint8Array(key)))};
-		var cid=new URLSearchParams(window.location.search).get("CID");
-		if(cid)data.CID=cid;
-		
-		commandJWT("connect",data).then((request)=>{
-			
-				var r=JSON.parse(request.responseText);
-				if(r['.SUCCESS'])
-				{
-					CID_COOKIE=r['.DATA']['CID'];
-					console.log("Connected: "+CID_COOKIE);
-					
-					 
-					let info={};
-					let canvas=document.createElement("canvas");
-					let gl=canvas.getContext("experimental-webgl");
-					if(gl!=null){
-						let params={RENDERER:1,VENDOR:1,VERSION:1,MAX_COMBINED_TEXTURE_IMAGE_UNITS:1,MAX_TEXTURE_SIZE:1,MAX_VARYING_VECTORS:1,MAX_VERTEX_ATTRIBS:1,MAX_VERTEX_UNIFORM_VECTORS:1};
-						
-						for(let name in params){
-							info[name]=gl.getParameter(gl[name]);
-						}
-						let dbgRenderInfo=gl.getExtension("WEBGL_debug_renderer_info");
-						if(dbgRenderInfo!=null){
-							info.RENDERER2=gl.getParameter(dbgRenderInfo.UNMASKED_RENDERER_WEBGL);
-							info.VENDOR2=gl.getParameter(dbgRenderInfo.UNMASKED_VENDOR_WEBGL);
-						}
-					}
-	
-					info.platform=navigator.platform;
-					info.userAgent=navigator.userAgent;
-					info.url=location.href;
-							
-					if(performance&&performance.memory&&performance.memory.jsHeapSizeLimit){
-						info.jsHeapSizeLimit=performance.memory.jsHeapSizeLimit;	
-					}
-						
-					
-					opn.cloud.command('clientinfo',info).then((request)=>{
-						var r=JSON.parse(request.responseText);
-						if(r['.SUCCESS'])
-						{
-							this.whenConnected().callThen();
-						}
-						else
-						{
-							this.whenConnected().callOtherwise();
-						}
-						
-					}).otherwise(()=>{
-						//network failed
-						this.whenConnected().callOtherwise();
-					})
-					
-					
-				}
-				else 
-				{
-					this.whenConnected().callOtherwise();
-				}
-			
-		}).otherwise(()=>{
-			//network failed
-			this.whenConnected().callOtherwise();
-		})
+	renew_connection().then(()=>{
+		this.whenConnected().callThen();
+	}).otherwise(()=>{
+		this.whenConnected().callOtherwise();
 	})
 	
 }
@@ -515,10 +535,39 @@ opnCloud.prototype.command=function(cmd,data,d,files){
 		decrypt(opn.http(opn.hosturl+'do/',{method:'post',mime:'text/plain;charset=UTF-8', withCredentials:true,data:{data:encrypted, CID:CID_COOKIE},files}))
 		.then((object,event)=>{
 			p.callThen({object,event})
-		}).otherwise(()=>{
-			p.callOtherwise();
+		}).otherwise((request)=>{
+			
+			if(request&&request.responseText&&request.responseText.indexOf("{")==0){
+				renew_connection().then(()=>{
+					this.command(cmd,data,d,files).then((object,event)=>{
+						p.callThen({object,event});
+					}).otherwise(()=>{
+						p.callOtherwise();
+					})
+				}).otherwise(()=>{
+					p.callOtherwise();
+				})
+			}
+			else p.callOtherwise();
 		});
 
+	}).otherwise(()=>{
+		p.callOtherwise();
+	})
+	return p;
+};
+
+opnCloud.prototype.cookies=function(data){
+	let p=new opnPromise();
+	opn.cloud.command("receipt",data).then((request)=>{	
+		var r=JSON.parse(request.responseText);
+		  if(r[".DATA"]["UID"]){
+					UID_COOKIE=r[".DATA"]["UID"];
+				}
+		  if(r[".DATA"]["SID"]){
+					SID_COOKIE=r[".DATA"]["SID"];
+				}
+		p.callThen({object:request});
 	}).otherwise(()=>{
 		p.callOtherwise();
 	})
@@ -590,7 +639,7 @@ opnCloud.prototype.download=function(oid,options)
 					p.callThen({object:e.format(merged,opt),event:request});
 				}
 				
-			}).catch(function(e){
+			}).otherwise(function(e){
 				p.callCatch({object:request.response,event:e});
 			});
 		
@@ -623,7 +672,7 @@ opnCloud.prototype.download=function(oid,options)
 						}
 						else download_next_part(part_id+4);
 						
-					}).catch(function(e){
+					}).otherwise(function(e){
 						p.callCatch({object:request.response,event:e});
 					});
 				

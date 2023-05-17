@@ -150,8 +150,9 @@ OPNAPI.prototype.run=function(program,options){
 	
   var announcements=function(){
 	  
-	  opn.cloud.command("receipt",{"GET":true}).then(function(request){
+	  opn.cloud.cookies({"GET":true}).then(function(request){
 		  var r=JSON.parse(request.responseText);
+		  
 	  var show_announcement=function(title,text,name,startTime,button_text){
 			if(text){
 				var found=false;
@@ -202,7 +203,7 @@ OPNAPI.prototype.run=function(program,options){
 				btn.addEventListener('click',()=>{
 					div.remove();
 					var now=new Date().getTime();
-					opn.cloud.command('receipt',{TYPE:name}).then(()=>{
+					opn.cloud.cookies({TYPE:name}).then(()=>{
 						remaining-=1;
 						if(remaining==0)announcement_div.remove();
 					});
@@ -734,7 +735,10 @@ OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,ti
 {
 	var file_request=new XMLHttpRequest();
 	var p=new opnPromise(file_request);
-	p.catch(function(){console.log('E');});
+	p.catch(function(){
+		console.log(p);
+		console.log('E');
+	});
 	file_request.open("POST",url,true);
 	if(timeout)
 	{
@@ -781,7 +785,10 @@ OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCr
 {
 	var file_request=new XMLHttpRequest();
 	var p=new opnPromise(file_request);
-	p.catch(function(){console.log('E');});
+	p.catch(function(){
+		console.log(p);
+		console.log('E');
+	});
 	file_request.open("POST",url,true);
 	if(timeout)
 	{
@@ -884,7 +891,10 @@ OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,tim
 {
 	var file_request=new XMLHttpRequest();
 	var p=new opnPromise(file_request);
-	p.catch(function(){console.log('E');});
+	p.catch(function(){
+		console.log(p);
+		console.log('E');
+	});
 	var msg="";
 	if(typeof data!=='undefined')
 	{
@@ -1528,8 +1538,14 @@ function opnApp(options)
 	else this.cache=new opnCache(this,opt.caller);
 	if(opt.caller)
 	{
-		this._progress.whenOneMoreToDo().then((n)=>{opt.caller.getProgress().oneMoreToDo(n);});
-		this._progress.whenOneMoreDone().then((n)=>{opt.caller.getProgress().oneMoreDone(n);});
+		this._progress.whenOneMoreToDo().then((n)=>{
+			if(!opt.caller.isTerminated())
+			opt.caller.getProgress().oneMoreToDo(n);
+			});
+		this._progress.whenOneMoreDone().then((n)=>{
+			if(!opt.caller.isTerminated())
+			opt.caller.getProgress().oneMoreDone(n);
+			});
 	}
 }
 
@@ -1617,7 +1633,9 @@ opnApp.prototype.isWindowed=function()
 	else return true;
 };
 
-opnApp.prototype.getProgress=function(){return this._progress;};
+opnApp.prototype.getProgress=function(){
+	return this._progress;
+	};
 
 opnApp.codifyAssets=function(AssetsString)
 {
@@ -1836,7 +1854,7 @@ opnApp.prototype.run=function(app,options)
 		try
 		{
 			app(opt,newopn,newwindow,opnApp_);}
-		catch(e){self.whenStarted().callThen();}
+		catch(e){self.whenStarted().callThen();throw(e);}
 	}
 	else app(opt,newopn,newwindow,opnApp_);
 };
@@ -1844,7 +1862,7 @@ opnApp.prototype.run=function(app,options)
 opnApp.prototype.whenStarted=function(){return this._run_p;};
 opnApp.prototype.whenError=function(){return this._error_p;};
 opnApp.prototype.whenTerminated=function(){return this._terminate_p;};
-
+opnApp.prototype.isTerminated=function(){if(this._terminate_p)return false;else return true;}
 opnApp.prototype.terminate=function(){
 	if(this._terminate_p){//so that we do not terminate twice
 		this._terminate_p.callThen();
