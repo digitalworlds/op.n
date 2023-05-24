@@ -42,7 +42,7 @@
 	
 	function renew_connection(){
 		let p=new opn.Promise();
-		
+		CID_COOKIE='';
 		let key = window.crypto.getRandomValues(new Uint8Array(16));
 	
 	crypto.subtle.importKey(
@@ -389,7 +389,7 @@ opnCloudObjectID.prototype.processIDfield=function(id){
  * @return string A string with the URL of this cloud object.
  */
 opnCloudObjectID.prototype.getStaticURL=function(extension){
-	return 'Assets/'+this.hostname_+'/'+this.oid+'/'+((typeof extension!=="undefined")?extension:"");
+	return opn.hosturl+'file/'+this.toString(true)+'/'+((typeof extension!=="undefined")?extension:"");
 }
 
 /**

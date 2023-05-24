@@ -77,6 +77,8 @@ OPNAPI.prototype.loadConfig=function(options){
 		if(self.hostname.length>0)
 		self.hosturl=((self.hostForcesHTTPS||'https:' == document.location.protocol) ? 'https:' : 'http:')+'//'+self.hostname+'/';
 		
+		if(self.static)self.hosturl=url;
+		
 		if(self.logo){
 			if(self.logo.url)self.logo.url=self.hosturl+self.logo.url;
 			if(self.logo.animated){
@@ -254,7 +256,7 @@ OPNAPI.prototype.run=function(program,options){
 	  }
 			
 	  progress.oneMoreToDo();
-	  opn.http((opn.static?"":opn.hosturl)+'js/opn/cloud-encoder-'+this.lib_versions['opn.cloud-encoder']+'.js').then((request)=>{
+	  opn.http(opn.hosturl+'js/opn/cloud-encoder-'+this.lib_versions['opn.cloud-encoder']+'.js').then((request)=>{
 		  this._cloud_encoder=URL.createObjectURL(new Blob([request.response]));
 		  this.init_p=this.import();
 		  progress.oneMoreToDo();
@@ -416,7 +418,7 @@ OPNAPI.prototype.importSingleLib=function(src)
 {
 	var s=src;
 	if(this.lib_versions[src])s+='-'+this.lib_versions[src];
-	return this.importSingleScript((this.static?"":this.hosturl)+'js/'+s.replace('.','/')+'.js');
+	return this.importSingleScript(this.hosturl+'js/'+s.replace('.','/')+'.js');
 };
 
 OPNAPI.prototype.importSingleScript=function(src)
