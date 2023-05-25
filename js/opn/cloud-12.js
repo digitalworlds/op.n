@@ -389,6 +389,7 @@ opnCloudObjectID.prototype.processIDfield=function(id){
  * @return string A string with the URL of this cloud object.
  */
 opnCloudObjectID.prototype.getStaticURL=function(extension){
+	if(extension=="embed")extension="?"+extension;
 	return opn.hosturl+'file/'+this.toString(true)+'/'+((typeof extension!=="undefined")?extension:"");
 }
 
@@ -1168,6 +1169,7 @@ opnCloudObject.prototype.pick=function()
  * @return string A string with the URL of this cloud object.
  */
 opnCloudObject.prototype.getURL=function(extension){
+	if(opn.static) return this.id.getStaticURL(extension);
 	return this.id.getURL(extension);
 }
 
@@ -1176,7 +1178,7 @@ opnCloudObject.prototype.getURL=function(extension){
  * @return string A string with the URL of the icon of this cloud object.
  */
 opnCloudObject.prototype.getIconURL=function(){
-	return this.id.getURL('icon.png');
+	return this.id.getIconURL();
 }
 
 /**
@@ -1184,7 +1186,7 @@ opnCloudObject.prototype.getIconURL=function(){
  * @return string A string with the URL of the preview image of this cloud object.
  */
 opnCloudObject.prototype.getPreviewURL=function(){
-	return this.id.getURL('preview.jpg');
+	return this.id.getPreviewURL();
 }
 
 /**

@@ -7,6 +7,19 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 	
+	<link rel="shortcut icon" href="img/logo.png" />
+	<link rel="icon" href="img/logo.png" /> 
+	<link rel="apple-touch-icon" href="img/logo.png" />
+	
+	<meta property="og:url" content="" />
+	<meta property="og:title" content="op.n" />
+	<meta property="og:description" content="A portable web-based operating system" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image:width" content="100" />
+	<meta property="og:image:height" content="100" />
+    <meta property="og:image" content="img/logo.png" />
+	<meta property="og:image:type" content="image/png" />
+	
 	<style>
         @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }          @viewport { width: 100vw ; min-zoom: 100%; zoom: 100% ; }
         @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }                   @viewport { user-zoom: fixed ; min-zoom: 100% ; }
@@ -15,18 +28,13 @@
 	<script type="text/javascript">
 	var my_program=function()
 	{
-		if(opn.static && (location.search.indexOf('?file/')==0||location.search.indexOf('?app/')==0))
+		if(opn.static && location.search.indexOf('?app/')==0)
 		{
 			let loadapp=()=>{
 				if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
 				
 				opn.cloud.getObject(oid).whenReady().then((o)=>{
-					document.title=o.getSystemProperty('NAME');
-					let icon=o.getSystemProperty('ICON');
-					if(icon){
-						let links=document.getElementsByTagName('link');
-						for(let i=0;i<links.length;i++)links[i].href=o.id.getIconURL();
-					}
+					
 					new opn.App().load(opn.viewers['OS']).then((Assets)=>{
 						let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
 						
@@ -66,16 +74,8 @@
 			var command='';
 			var oid='';
 			var embed=false;
-			if(location.search.indexOf('?file/')==0)
-			{
-				let end=location.search.indexOf('/',6);
-				if(end==-1)end=undefined;
-				else command=location.search.substring(end);
-				if(command.indexOf('/embed')==0)embed=true;
-				oid=location.search.substring(6,end);
-				loadapp();
-			}else if(location.search.indexOf('?app/')==0)
-			{
+			
+			
 				let end=location.search.indexOf('/',5);
 				if(end==-1)end=undefined;
 				else command=location.search.substring(end);
@@ -85,7 +85,7 @@
 					oid=request.responseText.split("\n")[0];
 					loadapp();
 				})
-			}
+			
 			return;
 		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
