@@ -14,17 +14,7 @@
 <script type="text/javascript">
 var my_program=function()
 {
-new opn.App().load("w2o8tx3j2vjqzscp@research.dwi.ufl.edu/op.n").then((Assets)=>{
-let os=new Assets.opnOS({parentDiv:opn.getScreen()});
-let oid="s9g7h8913rfvm0wg@research.dwi.ufl.edu/op.n";
-let command='';
-if(location.search.indexOf('?')==0){
- let i=location.search.indexOf('&');
- if(i==-1) command=location.search.substring(1);
- else command=location.search.substring(1,i);}
-let embed=false; if(command=='embed')embed=true;
-var app=os.openApp({initapp:true,fullscreen:embed,appID:"s9g7h8913rfvm0wg@research.dwi.ufl.edu/op.n"});
-});
+opn.defaultStart("s9g7h8913rfvm0wg@research.dwi.ufl.edu/op.n");
 }
 </script>
 </head>
