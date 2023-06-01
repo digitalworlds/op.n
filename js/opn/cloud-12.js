@@ -593,11 +593,11 @@ opnCloud.prototype.download=function(oid,options)
 		aborted=true;
 	});	
 	
-	progress.whenOneMoreToDo().then(function(n){
+	progress.whenOneMoreToDo().then((n)=>{
 		opn.getProgress().oneMoreToDo(n);
 		if(opt.progress)opt.progress.oneMoreToDo(n);
 	});
-	progress.whenOneMoreDone().then(function(n){
+	progress.whenOneMoreDone().then((n)=>{
 		opn.getProgress().oneMoreDone(n);
 		if(opt.progress)opt.progress.oneMoreDone(n);
 	});	
@@ -616,13 +616,13 @@ opnCloud.prototype.download=function(oid,options)
 	var dt2=0;var dt2c=0;
 	
 	//The last part is downloaded second and it starts downloading the intermediate parts if any (>2).
-	var download_last_part=function(first_part){
+	var download_last_part=(first_part)=>{
 		
 		progress.oneMoreToDo(must_download-1);
 		decrypt(opn.http(opn.hosturl+'file/'+id.toString(true)+'/data'+(must_download-1)+'?client='+location.hostname,{method:'post',responseType:'arraybuffer',withCredentials:true,data:{CID:CID_COOKIE}})).then(function(decrypted_request,request){
 			
 			var e=opn.cloud.encoder;
-			e.decode(decrypted_request.response).then(function(b){
+			e.decode(decrypted_request.response).then((b)=>{
 				progress.oneMoreDone();
 				downloaded+=1;
 				total_size=chunk_size*(must_download-1)+b.length;
@@ -640,15 +640,15 @@ opnCloud.prototype.download=function(oid,options)
 					p.callThen({object:e.format(merged,opt),event:request});
 				}
 				
-			}).otherwise(function(e){
+			}).otherwise((e)=>{
 				p.callCatch({object:request.response,event:e});
 			});
 		
-		}).otherwise(function(request){p.callCatch({event:request});});
+		}).otherwise((request)=>{p.callCatch({event:request});});
 		
 	}
 	
-	var download_next_part=function(part_id){	
+	var download_next_part=(part_id)=>{	
 		if(aborted)return;
 		
 		if(part_id<must_download-1){
@@ -659,7 +659,7 @@ opnCloud.prototype.download=function(oid,options)
 				
 					var e=opn.cloud.encoder;
 					var t2=new Date().getTime();
-					e.decode(decrypted_request.response).then(function(b){
+					e.decode(decrypted_request.response).then((b)=>{
 						dt2=(dt2*dt2c+(new Date().getTime()-t2))/(dt2c+1);
 						dt2c+=1;
 						
@@ -673,11 +673,11 @@ opnCloud.prototype.download=function(oid,options)
 						}
 						else download_next_part(part_id+4);
 						
-					}).otherwise(function(e){
+					}).otherwise((e)=>{
 						p.callCatch({object:request.response,event:e});
 					});
 				
-			}).otherwise(function(request){p.callCatch({event:request});});
+			}).otherwise((request)=>{p.callCatch({event:request});});
 			
 		}
 	}
@@ -691,7 +691,7 @@ opnCloud.prototype.download=function(oid,options)
 		if(cl && (cl.indexOf('ds1_')==0 || cl=='deflate_shift1'))//cl may be null if Content-Language is not defined.
 		{
 			var e=opn.cloud.encoder;
-			e.decode(decrypted_request.response).then(function(b){
+			e.decode(decrypted_request.response).then((b)=>{
 				if(cl=='deflate_shift1') must_download=1;
 				else must_download=parseInt(cl.substring(4));
 				chunk_size=b.length;
@@ -702,18 +702,18 @@ opnCloud.prototype.download=function(oid,options)
 					progress.oneMoreDone();
 					p.callThen({object:e.format(b,opt),event:request});
 				}
-			}).catch(function(e){
+			}).catch((e)=>{
 				progress.oneMoreDone();
-				p.callCatch({object:request.response,event:e});
+				p.callCatch({object:decrypted_request.response,event:request});
 			});
 		}
 		else 
 		{
 			var e=opn.cloud.encoder;
 			progress.oneMoreDone();
-			p.callThen({object:e.format(request.response,opt),event:request});
+			p.callThen({object:e.format(decrypted_request.response,opt),event:request});
 		}
-	}).otherwise(function(request){progress.oneMoreDone(2);p.callCatch({event:request});});
+	}).otherwise((request)=>{progress.oneMoreDone(2);p.callCatch({event:request});});
 	
 	return p;
 };
