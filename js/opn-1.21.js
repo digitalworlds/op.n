@@ -40,7 +40,8 @@ function OPNAPI()
 	this.global={};
 	this.lib_versions={
 		"opn.cloud":"12",
-		"opn.cloud-encoder":"1"
+		"opn.cloud-encoder":"1",
+		"opn.live":"4"
 		};
 		
 	this.lib_index=["opn.cloud"];
