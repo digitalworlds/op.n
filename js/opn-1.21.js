@@ -778,8 +778,12 @@ OPNAPI.prototype.loadAsLib=function(input,progress){
 
 OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,timeout)
 {
+	
+	var p=new opnPromise();
+	
+	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	var p=new opnPromise(file_request);
+	p.setObject(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -798,6 +802,11 @@ OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,ti
 			{
 				opn.progress.oneMoreDone();
 				p.callThen();
+			}
+			else if(file_request.status==0)
+			{
+				console.log('Internet connection error ...');
+				opn.wait({seconds:5}).then(send);	
 			}
 			else
 			{
@@ -823,13 +832,19 @@ OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,ti
 	}
 	opn.progress.oneMoreToDo();
 	file_request.send(msg);
+	};
+	send();
 	return p;
 };
 
 OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCredentials,timeout)
 {
+	
+	var p=new opnPromise();
+	
+	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	var p=new opnPromise(file_request);
+	p.setObject(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -848,6 +863,11 @@ OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCr
 			{
 				opn.progress.oneMoreDone();
 				p.callThen();
+			}
+			else if(file_request.status==0)
+			{
+				console.log('Internet connection error ...');
+				opn.wait({seconds:5}).then(send);	
 			}
 			else
 			{
@@ -929,13 +949,19 @@ OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCr
 	for (var i = END.length-1; i>=0 ; i--) bin[i+offset] = (END.charCodeAt(i) & 0xff);
 	opn.progress.oneMoreToDo();
 	file_request.send(bin);
+	}
+	send();
 	return p;
 };
 
 OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,timeout)
 {
+	
+	var p=new opnPromise();
+	
+	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	var p=new opnPromise(file_request);
+	p.setObject(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -965,6 +991,11 @@ OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,tim
 				opn.progress.oneMoreDone();
 				p.callThen();
 			}
+			else if(file_request.status==0)
+			{
+				console.log('Internet connection error ...');
+				opn.wait({seconds:5}).then(send);	
+			}
 			else
 			{
 				opn.progress.oneMoreDone();
@@ -978,6 +1009,8 @@ OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,tim
 	if(withCredentials)file_request.withCredentials=true;
 	opn.progress.oneMoreToDo();
 	file_request.send();
+	}
+	send();
 	return p;
 };
 

@@ -224,8 +224,8 @@
 		            const msg=window.btoa(String.fromCharCode.apply(null, new Uint8Array(encrypted))).replace(/\//g, '_').replace(/\+/g, '-');
 		            opn.http(opn.hosturl+'do/',{method:'post',mime:"text/plain;charset=UTF-8",withCredentials:true,data:{j:msg}}).then((response)=>{
 		                p.callThen({object:response});
-		            }).catch((e)=>{p.callCatch({event:e});});
-		        }).catch((e)=>{p.callCatch({event:e});});
+		            }).otherwise((e)=>{p.callCatch({event:e});});
+		        }).catch((e)=>{p.callCatch({event:e});throw(e);});
 		};
 		
 		if(SERVER_KEY==null)
@@ -237,7 +237,7 @@
 		        SERVER_KEY=key;
 		        send();
 		    }).catch((e)=>{p.callCatch({event:e});throw(e);});
-		}).catch((e)=>{p.callCatch({event:e})});
+		}).otherwise((e)=>{p.callCatch({event:e})});
 		else send();
 		
 		return p;
