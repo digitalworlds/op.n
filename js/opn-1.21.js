@@ -284,17 +284,20 @@ OPNAPI.prototype.run=function(program,options){
 
 OPNAPI.prototype.defaultStart=function(oid)
 {
+	opn.getProgress().oneMoreToDo();
+	opn.showProgress({div:document.body});
 	let command='';
-if(location.search.indexOf('?')==0){
- 	let i=location.search.indexOf('&');
-	if(i==-1) command=location.search.substring(1);
- 	else command=location.search.substring(1,i);}
-let embed=false; if(command=='embed')embed=true;
-opn.cloud.getObject(oid).whenReady().then((o)=>{
-new opn.App().load(opn.viewers['OS']).then((Assets)=>{
-let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
-let app=null;
-if(command.indexOf('code')==0){
+	if(location.search.indexOf('?')==0){
+ 		let i=location.search.indexOf('&');
+		if(i==-1) command=location.search.substring(1);
+ 		else command=location.search.substring(1,i);
+ 	}
+	let embed=false; if(command=='embed')embed=true;
+	opn.cloud.getObject(oid).whenReady().then((o)=>{
+	new opn.App().load(opn.viewers['OS']).then((Assets)=>{
+	let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
+	let app=null;
+	if(command.indexOf('code')==0){
 		app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
 	}
 	else if(command.indexOf('api')==0){
@@ -319,6 +322,10 @@ if(command.indexOf('code')==0){
 		}
 	}
 		app.getWindow().maximize();
+		app.getProgress().whenDone().then(()=>{
+			opn.getProgress().oneMoreDone();
+			return true;
+		});
 	});
 	}).otherwise(()=>{
 		console.log('This object is not available');
@@ -385,6 +392,7 @@ OPNAPI.prototype.showProgress=function(options){
 		  pr.whenDone().then(function(p)
 		  {
 			 l.remove();
+			 return true;
 		  });
 	}
 	return l;

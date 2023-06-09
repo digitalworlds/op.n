@@ -28,6 +28,8 @@
 	<script type="text/javascript">
 	var my_program=function()
 	{
+		opn.getProgress().oneMoreToDo();
+		opn.showProgress({div:document.body});
 		if(opn.static && location.search.indexOf('?app/')==0)
 		{
 			let loadapp=()=>{
@@ -37,6 +39,9 @@
 					
 					new opn.App().load(opn.viewers['OS']).then((Assets)=>{
 						let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
+						
+						opn.getProgress().oneMoreDone();
+						console.log(opn.getProgress().getValue())
 						
 						let app=null;
 						
@@ -66,6 +71,10 @@
 							}
 						}
 						app.getWindow().maximize();
+						app.getProgress().whenDone().then(()=>{
+							opn.getProgress().oneMoreDone();
+							return true;
+						});
 					});
 				}).otherwise(()=>{
 					console.log('This object is not available');
@@ -89,10 +98,14 @@
 			return;
 		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
-		new opn.App().load(opn.landing);	
+		let app=new opn.App();app.load(opn.landing);
+		app.getProgress().whenDone().then(()=>{
+			opn.getProgress().oneMoreDone();
+			return true;
+		});
 	}
 	</script>
 </head>
 <body onload="opn.run(my_program,{loadingLogo:true})" style="margin:0px;background:#fff;color:#888;"></body>
-<div style="position:absolute;inset:0px;overflow:hidden;"><div style="display:flex;align-items:center;justify-content:center;height:100%;">Connecting...</div></div>
+<div style="position:absolute;inset:0px;overflow:hidden;"><div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial,sans-serif;">Connecting...</div></div>
 </html>
