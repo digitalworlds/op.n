@@ -297,22 +297,15 @@ OPNAPI.prototype.defaultStart=function(oid)
 	new opn.App().load(opn.viewers['OS']).then((Assets)=>{
 	let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
 	let app=null;
-	if(command.indexOf('code')==0){
-		app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
-	}
-	else if(command.indexOf('api')==0){
-		app=os.openApp({initapp:true,appID:opn.viewers['API'],input:oid});
+	if(typeof opn.viewers[command]!=='undefined'){
+		app=os.openApp({initapp:true,appID:opn.viewers[command],input:o});
 	}else{
 		if(o.getSystemProperty('OPEN')){
 			app=os.openApp({initapp:true,appID:o.getSystemProperty('OPEN'),input:oid});
 		} else if (o.getSystemProperty('CLASS')){
 			let c=o.getSystemProperty('CLASS');
-			if(c=='List'){
-				app=os.openApp({initapp:true,appID:opn.viewers['List'],input:oid});
-			}else if(c=='Image'){
-				app=os.openApp({initapp:true,appID:opn.viewers['Image'],input:oid});
-			}else if(c=='User'){
-				app=os.openApp({initapp:true,appID:opn.viewers['User'],input:oid});
+			if(typeof opn.viewers[c]!=='undefined'){
+				app=os.openApp({initapp:true,appID:opn.viewers[c],input:oid});
 			}else{
 				app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
 			}
