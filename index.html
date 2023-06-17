@@ -30,7 +30,7 @@
 	{
 		opn.getProgress().oneMoreToDo();
 		opn.showProgress({div:document.body});
-		if(opn.static && location.search.indexOf('?app/')==0)
+		if(location.search.indexOf('?app/')==0)
 		{
 			let loadapp=()=>{
 				if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
@@ -90,7 +90,7 @@
 				else command=location.search.substring(end);
 				if(command.indexOf('/embed')==0)embed=true;
 				let app_name=location.search.substring(5,end);
-				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name).then((request)=>{
+				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name,{method:"post"}).then((request)=>{
 					oid=request.responseText.split("\n")[0];
 					loadapp();
 				})
