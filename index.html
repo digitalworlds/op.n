@@ -90,7 +90,8 @@
 				else command=location.search.substring(end);
 				if(command.indexOf('/embed')==0)embed=true;
 				let app_name=location.search.substring(5,end);
-				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name,{method:"post"}).then((request)=>{
+				let opt=(opn.static)?{}:{method:'post'};
+				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name,opt).then((request)=>{
 					oid=request.responseText.split("\n")[0];
 					loadapp();
 				})
