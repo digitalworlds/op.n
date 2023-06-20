@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+<field name="id" value="mamemrq0londxht8"/>
+<field name="date_created" value="2015-08-22T18:00:44-04:00"/>
+<field name="title" value="Lucian_Zeuxis1e"/><treebank xml:lang="grc" format="mtrx" version="1.0" date="2015-08-23T13:56:47-04:00" id="mamemrq0londxht8"><annotator><short>mtreex</short><name>Treebank morphometer</name><address/><uri>http://www.mtreex.org/db/mamemrq0londxht8</uri></annotator><annotator>
+      <short/>
+      <name/>
+      <address/>
+      <uri>http://services2.perseids.org/llt/segtok</uri>
+   </annotator><annotator>
+      <short/>
+      <name/>
+      <address/>
+      <uri>http://github.com/latin-language-toolkit/arethusa</uri>
+   </annotator><annotator>
+      <short>bozia</short>
+      <name>Eleni Bozia</name>
+      <address>bozia@ufl.edu</address>
+      <uri>http://data.perseus.org/sosol/users/bozia</uri>
+   </annotator><sentence id="1" document_id="" subdoc="" span=""><word id="1" form="&#x1F29;&#x3C1;&#x3AC;&#x3BA;&#x3BB;&#x3B5;&#x3B9;&#x3C2;" lemma="&#x1F29;&#x3C1;&#x3B1;&#x3BA;&#x3BB;&#x1FC6;&#x3C2;" postag="n-s---mv-" relation="ExD"><word id="2" form="," lemma="punc1" postag="u--------" relation="AuxX"/></word><word id="4" form="&#x3C0;&#x3B1;&#x3C1;&#x3B1;&#x3B4;&#x3BF;&#x3BE;&#x3BF;&#x3BB;&#x3BF;&#x3B3;&#x3AF;&#x3B1;&#x3C2;" lemma="&#x3C0;&#x3B1;&#x3C1;&#x3B1;&#x3B4;&#x3BF;&#x3BE;&#x3BF;&#x3BB;&#x3BF;&#x3B3;&#x3AF;&#x3B1;" postag="n-s---fg-" relation="ExD"><word id="3" form="&#x3C4;&#x1FC6;&#x3C2;" lemma="&#x1F41;" postag="l-s---fg-" relation="ATR"/></word><word id="5" form="." lemma="punc1" postag="u--------" relation="AuxK"/></sentence></treebank></metadata>
