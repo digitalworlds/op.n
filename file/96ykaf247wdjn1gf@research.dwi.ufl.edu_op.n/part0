@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+<field name="id" value="r7irbm67bsnwyw5p"/>
+<field name="date_created" value="2015-08-22T17:57:36-04:00"/>
+<field name="title" value="Dio_42_2"/><treebank xml:lang="grc" format="mtrx" version="1.0" date="2015-08-23T13:56:47-04:00" id="r7irbm67bsnwyw5p"><annotator><short>mtreex</short><name>Treebank morphometer</name><address/><uri>http://www.mtreex.org/db/r7irbm67bsnwyw5p</uri></annotator><annotator>
+      <short/>
+      <name/>
+      <address/>
+      <uri>http://services2.perseids.org/llt/segtok</uri>
+   </annotator><annotator>
+      <short/>
+      <name/>
+      <address/>
+      <uri>http://github.com/latin-language-toolkit/arethusa</uri>
+   </annotator><annotator>
+      <short>bozia</short>
+      <name>Eleni Bozia</name>
+      <address>bozia@ufl.edu</address>
+      <uri>http://data.perseus.org/sosol/users/bozia</uri>
+   </annotator><sentence id="1" document_id="" subdoc="" span=""><word id="9" form="&#x3C0;&#x3B1;&#x3C1;&#x3AD;&#x3C7;&#x3C9;" lemma="&#x3C0;&#x3B1;&#x3C1;&#x3AD;&#x3C7;&#x3C9;" postag="v1spia---" relation="PRED"><word id="1" form="&#x3B5;&#x1F30;" lemma="&#x3B5;&#x1F30;" postag="c--------" relation="AuxC"><word id="2" form="&#x3BC;&#x1F72;&#x3BD;" lemma="&#x3BC;&#x3AD;&#x3BD;" postag="d--------" relation="AuxY"/><word id="3" form="&#x3B3;&#x1F70;&#x3C1;" lemma="&#x3B3;&#x3AC;&#x3C1;" postag="d--------" relation="AuxY"/><word id="5" form="&#x1F14;&#x3C7;&#x3B5;&#x3C4;&#x3B5;" lemma="&#x1F14;&#x3C7;&#x3C9;" postag="v2ppia---" relation="ADV"><word id="4" form="&#x3BF;&#x1F55;&#x3C4;&#x3C9;&#x3C2;" lemma="&#x3BF;&#x1F55;&#x3C4;&#x3C9;&#x3C2;" postag="d--------" relation="ADV"/></word><word id="6" form="," lemma="punc1" postag="u--------" relation="AuxX"/></word><word id="7" form="&#x3B8;&#x3B1;&#x3C1;&#x3C1;&#x1FF6;&#x3BD;" lemma="&#x3B8;&#x3B1;&#x3C1;&#x3C3;&#x3AD;&#x3C9;" postag="v-sppamn-" relation=""/><word id="8" form="&#x1F51;&#x3BC;&#x1FD6;&#x3BD;" lemma="&#x3C3;&#x3CD;" postag="p2p----d-" relation="OBJ"/><word id="10" form="&#x1F10;&#x3BC;&#x3B1;&#x3C5;&#x3C4;&#x3CC;&#x3BD;" lemma="&#x1F10;&#x3BC;&#x3B1;&#x3C5;&#x3C4;&#x3BF;&#x1FE6;" postag="p-s---ma-" relation="OBJ"/><word id="12" form="&#x1F35;&#x3BD;&#x3B1;" lemma="&#x1F35;&#x3BD;&#x3B1;" postag="c--------" relation="AuxC"><word id="11" form="," lemma="punc1" postag="u--------" relation="AuxX"/><word id="13" form="&#x1F10;&#x3BC;&#x3C0;&#x3BB;&#x3AE;&#x3C3;&#x3B7;&#x3C4;&#x3B5;" lemma="&#x1F10;&#x3BC;&#x3C0;&#x3AF;&#x3C0;&#x3BB;&#x3B7;&#x3BC;&#x3B9;" postag="v2pasa---" relation="ADV"><word id="15" form="&#x3C0;&#x3C1;&#x3BF;&#x3B8;&#x3C5;&#x3BC;&#x3AF;&#x3B1;&#x3BD;" lemma="&#x3C0;&#x3C1;&#x3BF;&#x3B8;&#x3C5;&#x3BC;&#x3AF;&#x3B1;" postag="n-s---fa-" relation="OBJ"><word id="14" form="&#x3C4;&#x1F74;&#x3BD;" lemma="&#x1F41;" postag="l-s---fa-" relation="ATR"/></word></word></word></word><word id="16" form="&#xB7;" lemma="punc1" postag="u--------" relation="AuxK"/></sentence></treebank></metadata>
