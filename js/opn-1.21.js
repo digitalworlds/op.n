@@ -40,8 +40,7 @@ function OPNAPI()
 	this.global={};
 	this.lib_versions={
 		"opn.cloud":"12",
-		"opn.cloud-encoder":"1",
-		"opn.live":"4"
+		"opn.cloud-encoder":"1"
 		};
 		
 	this.lib_index=["opn.cloud"];
@@ -252,7 +251,6 @@ OPNAPI.prototype.run=function(program,options){
 	  {
 		  opt.progress=progress;
 		  opt.div=document.body;
-		  if(document.body.firstElementChild)document.body.firstElementChild.remove();
 		  opn.showProgress(opt);
 	  }
 			
@@ -284,20 +282,17 @@ OPNAPI.prototype.run=function(program,options){
 
 OPNAPI.prototype.defaultStart=function(oid)
 {
-	opn.getProgress().oneMoreToDo();
-	opn.showProgress({div:document.body});
 	let command='';
-	if(location.search.indexOf('?')==0){
- 		let i=location.search.indexOf('&');
-		if(i==-1) command=location.search.substring(1);
- 		else command=location.search.substring(1,i);
- 	}
-	let embed=false; if(command=='embed')embed=true;
-	opn.cloud.getObject(oid).whenReady().then((o)=>{
-	new opn.App().load(opn.viewers['OS']).then((Assets)=>{
-	let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
-	let app=null;
-	if(command.indexOf('code')==0){
+if(location.search.indexOf('?')==0){
+ 	let i=location.search.indexOf('&');
+	if(i==-1) command=location.search.substring(1);
+ 	else command=location.search.substring(1,i);}
+let embed=false; if(command=='embed')embed=true;
+opn.cloud.getObject(oid).whenReady().then((o)=>{
+new opn.App().load(opn.viewers['OS']).then((Assets)=>{
+let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
+let app=null;
+if(command.indexOf('code')==0){
 		app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
 	}
 	else if(command.indexOf('api')==0){
@@ -322,10 +317,6 @@ OPNAPI.prototype.defaultStart=function(oid)
 		}
 	}
 		app.getWindow().maximize();
-		app.getProgress().whenDone().then(()=>{
-			opn.getProgress().oneMoreDone();
-			return true;
-		});
 	});
 	}).otherwise(()=>{
 		console.log('This object is not available');
@@ -392,7 +383,6 @@ OPNAPI.prototype.showProgress=function(options){
 		  pr.whenDone().then(function(p)
 		  {
 			 l.remove();
-			 return true;
 		  });
 	}
 	return l;
@@ -787,12 +777,8 @@ OPNAPI.prototype.loadAsLib=function(input,progress){
 
 OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,timeout)
 {
-	
-	var p=new opnPromise();
-	
-	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	p.setObject(file_request);
+	var p=new opnPromise(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -811,11 +797,6 @@ OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,ti
 			{
 				opn.progress.oneMoreDone();
 				p.callThen();
-			}
-			else if(file_request.status==0)
-			{
-				console.log('Internet connection error ...');
-				opn.wait({seconds:5}).then(send);	
 			}
 			else
 			{
@@ -841,19 +822,13 @@ OPNAPI.prototype.postHttp=function(url,data,mime,responseType,withCredentials,ti
 	}
 	opn.progress.oneMoreToDo();
 	file_request.send(msg);
-	};
-	send();
 	return p;
 };
 
 OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCredentials,timeout)
 {
-	
-	var p=new opnPromise();
-	
-	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	p.setObject(file_request);
+	var p=new opnPromise(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -872,11 +847,6 @@ OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCr
 			{
 				opn.progress.oneMoreDone();
 				p.callThen();
-			}
-			else if(file_request.status==0)
-			{
-				console.log('Internet connection error ...');
-				opn.wait({seconds:5}).then(send);	
 			}
 			else
 			{
@@ -958,19 +928,13 @@ OPNAPI.prototype.postHttpBinary=function(url,data,files,mime,responseType,withCr
 	for (var i = END.length-1; i>=0 ; i--) bin[i+offset] = (END.charCodeAt(i) & 0xff);
 	opn.progress.oneMoreToDo();
 	file_request.send(bin);
-	}
-	send();
 	return p;
 };
 
 OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,timeout)
 {
-	
-	var p=new opnPromise();
-	
-	let send=()=>{
 	var file_request=new XMLHttpRequest();
-	p.setObject(file_request);
+	var p=new opnPromise(file_request);
 	p.catch(function(){
 		console.log(p);
 		console.log('E');
@@ -1000,11 +964,6 @@ OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,tim
 				opn.progress.oneMoreDone();
 				p.callThen();
 			}
-			else if(file_request.status==0)
-			{
-				console.log('Internet connection error ...');
-				opn.wait({seconds:5}).then(send);	
-			}
 			else
 			{
 				opn.progress.oneMoreDone();
@@ -1018,8 +977,6 @@ OPNAPI.prototype.getHttp=function(url,data,mime,responseType,withCredentials,tim
 	if(withCredentials)file_request.withCredentials=true;
 	opn.progress.oneMoreToDo();
 	file_request.send();
-	}
-	send();
 	return p;
 };
 

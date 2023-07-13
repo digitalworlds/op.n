@@ -224,8 +224,8 @@
 		            const msg=window.btoa(String.fromCharCode.apply(null, new Uint8Array(encrypted))).replace(/\//g, '_').replace(/\+/g, '-');
 		            opn.http(opn.hosturl+'do/',{method:'post',mime:"text/plain;charset=UTF-8",withCredentials:true,data:{j:msg}}).then((response)=>{
 		                p.callThen({object:response});
-		            }).otherwise((e)=>{p.callCatch({event:e});});
-		        }).catch((e)=>{p.callCatch({event:e});throw(e);});
+		            }).catch((e)=>{p.callCatch({event:e});});
+		        }).catch((e)=>{p.callCatch({event:e});});
 		};
 		
 		if(SERVER_KEY==null)
@@ -237,7 +237,7 @@
 		        SERVER_KEY=key;
 		        send();
 		    }).catch((e)=>{p.callCatch({event:e});throw(e);});
-		}).otherwise((e)=>{p.callCatch({event:e})});
+		}).catch((e)=>{p.callCatch({event:e})});
 		else send();
 		
 		return p;
@@ -593,11 +593,11 @@ opnCloud.prototype.download=function(oid,options)
 		aborted=true;
 	});	
 	
-	progress.whenOneMoreToDo().then((n)=>{
+	progress.whenOneMoreToDo().then(function(n){
 		opn.getProgress().oneMoreToDo(n);
 		if(opt.progress)opt.progress.oneMoreToDo(n);
 	});
-	progress.whenOneMoreDone().then((n)=>{
+	progress.whenOneMoreDone().then(function(n){
 		opn.getProgress().oneMoreDone(n);
 		if(opt.progress)opt.progress.oneMoreDone(n);
 	});	
@@ -616,13 +616,13 @@ opnCloud.prototype.download=function(oid,options)
 	var dt2=0;var dt2c=0;
 	
 	//The last part is downloaded second and it starts downloading the intermediate parts if any (>2).
-	var download_last_part=(first_part)=>{
+	var download_last_part=function(first_part){
 		
 		progress.oneMoreToDo(must_download-1);
 		decrypt(opn.http(opn.hosturl+'file/'+id.toString(true)+'/data'+(must_download-1)+'?client='+location.hostname,{method:'post',responseType:'arraybuffer',withCredentials:true,data:{CID:CID_COOKIE}})).then(function(decrypted_request,request){
 			
 			var e=opn.cloud.encoder;
-			e.decode(decrypted_request.response).then((b)=>{
+			e.decode(decrypted_request.response).then(function(b){
 				progress.oneMoreDone();
 				downloaded+=1;
 				total_size=chunk_size*(must_download-1)+b.length;
@@ -640,15 +640,15 @@ opnCloud.prototype.download=function(oid,options)
 					p.callThen({object:e.format(merged,opt),event:request});
 				}
 				
-			}).otherwise((e)=>{
+			}).otherwise(function(e){
 				p.callCatch({object:request.response,event:e});
 			});
 		
-		}).otherwise((request)=>{p.callCatch({event:request});});
+		}).otherwise(function(request){p.callCatch({event:request});});
 		
 	}
 	
-	var download_next_part=(part_id)=>{	
+	var download_next_part=function(part_id){	
 		if(aborted)return;
 		
 		if(part_id<must_download-1){
@@ -659,7 +659,7 @@ opnCloud.prototype.download=function(oid,options)
 				
 					var e=opn.cloud.encoder;
 					var t2=new Date().getTime();
-					e.decode(decrypted_request.response).then((b)=>{
+					e.decode(decrypted_request.response).then(function(b){
 						dt2=(dt2*dt2c+(new Date().getTime()-t2))/(dt2c+1);
 						dt2c+=1;
 						
@@ -673,11 +673,11 @@ opnCloud.prototype.download=function(oid,options)
 						}
 						else download_next_part(part_id+4);
 						
-					}).otherwise((e)=>{
+					}).otherwise(function(e){
 						p.callCatch({object:request.response,event:e});
 					});
 				
-			}).otherwise((request)=>{p.callCatch({event:request});});
+			}).otherwise(function(request){p.callCatch({event:request});});
 			
 		}
 	}
@@ -691,7 +691,7 @@ opnCloud.prototype.download=function(oid,options)
 		if(cl && (cl.indexOf('ds1_')==0 || cl=='deflate_shift1'))//cl may be null if Content-Language is not defined.
 		{
 			var e=opn.cloud.encoder;
-			e.decode(decrypted_request.response).then((b)=>{
+			e.decode(decrypted_request.response).then(function(b){
 				if(cl=='deflate_shift1') must_download=1;
 				else must_download=parseInt(cl.substring(4));
 				chunk_size=b.length;
@@ -702,18 +702,18 @@ opnCloud.prototype.download=function(oid,options)
 					progress.oneMoreDone();
 					p.callThen({object:e.format(b,opt),event:request});
 				}
-			}).catch((e)=>{
+			}).catch(function(e){
 				progress.oneMoreDone();
-				p.callCatch({object:decrypted_request.response,event:request});
+				p.callCatch({object:request.response,event:e});
 			});
 		}
 		else 
 		{
 			var e=opn.cloud.encoder;
 			progress.oneMoreDone();
-			p.callThen({object:e.format(decrypted_request.response,opt),event:request});
+			p.callThen({object:e.format(request.response,opt),event:request});
 		}
-	}).otherwise((request)=>{progress.oneMoreDone(2);p.callCatch({event:request});});
+	}).otherwise(function(request){progress.oneMoreDone(2);p.callCatch({event:request});});
 	
 	return p;
 };
@@ -1711,35 +1711,21 @@ opnCloudObject.prototype.uploadImage=function(options)
 		
 	});
 	
-	var makeThumbnail=function(img,size,format,smoothing,square){
+	var makeThumbnail=function(img,size,format,smoothing){
 		var canvas=document.createElement("canvas");
 		var ctx=canvas.getContext('2d');
-		var x=0;
-		var y=0;
-		var w=0;
-		var z=0;
 		if(img.width>=img.height){
 			canvas.width=Math.min(size,img.width);
-			if(square){
-				canvas.height=canvas.width;x=0;w=canvas.width;h=Math.round(img.height*canvas.width/img.width);y=Math.round((canvas.height-h)/2);
-			}
-			else {
-				canvas.height=Math.round(img.height*canvas.width/img.width);x=0;y=0;w=canvas.width;h=canvas.height;
-				}
+			canvas.height=Math.round(img.height*canvas.width/img.width);
 		}
 		else{
 			canvas.height=Math.min(size,img.height);
-			if(square){
-				canvas.width=canvas.height;y=0;h=canvas.height;w=Math.round(img.width*canvas.height/img.height);x=Math.round((canvas.width-w)/2);
-			}
-			else {
-				canvas.width=Math.round(img.width*canvas.height/img.height);x=0;y=0;w=canvas.width;h=canvas.height;
-				}
+			canvas.width=Math.round(img.width*canvas.height/img.height);
 		}
 		ctx.imageSmoothingEnabled=smoothing;
 		ctx.imageSmoothingQuality="high";
 		if(format=='PNG'){
-		 ctx.drawImage(img,0,0,img.width,img.height,x,y,w,h);
+		 ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
 		 return canvas.toDataURL('image/png');
 		}else{
 			ctx.fillStyle = "#FFFFFF";
@@ -1753,7 +1739,7 @@ opnCloudObject.prototype.uploadImage=function(options)
 		    }
 			ctx.fillStyle='#EEEEEE';
 			ctx.fill();
-			ctx.drawImage(img,0,0,img.width,img.height,x,y,w,h);
+			ctx.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
 			return canvas.toDataURL('image/jpeg',0.92);
 		}
 	};
@@ -1767,7 +1753,7 @@ opnCloudObject.prototype.uploadImage=function(options)
 			var img=new Image();
 			img.onload=function(){
 
-				var url=makeThumbnail(img,256,'PNG',false,true);
+				var url=makeThumbnail(img,256,'PNG',false);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
 					encrypt(new Uint8Array(r.response)).then((b)=>{
@@ -1776,7 +1762,7 @@ opnCloudObject.prototype.uploadImage=function(options)
 					});
 				});
 
-				var url=makeThumbnail(img,1024,'JPG',true,false);
+				var url=makeThumbnail(img,1024,'JPG',true);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
 					encrypt(new Uint8Array(r.response)).then((b)=>{
@@ -1804,7 +1790,7 @@ opnCloudObject.prototype.uploadImage=function(options)
 			var img=new Image();
 			img.onload=function(){
 
-				var url=makeThumbnail(img,256,'PNG',false,true);
+				var url=makeThumbnail(img,256,'PNG',false);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
 					encrypt(new Uint8Array(r.response)).then((b)=>{
@@ -1813,7 +1799,7 @@ opnCloudObject.prototype.uploadImage=function(options)
 					});
 				});
 
-				var url=makeThumbnail(img,1024,'JPG',true,false);
+				var url=makeThumbnail(img,1024,'JPG',true);
 				
 				opn.http(url,{responseType:"arraybuffer"}).then(function(r){
 					encrypt(new Uint8Array(r.response)).then((b)=>{
