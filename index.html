@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
 	<title>op.n</title>
@@ -28,7 +28,9 @@
 	<script type="text/javascript">
 	var my_program=function()
 	{
-		if(opn.static && location.search.indexOf('?app/')==0)
+		opn.getProgress().oneMoreToDo();
+		opn.showProgress({div:document.body});
+		if(location.search.indexOf('?app/')==0)
 		{
 			let loadapp=()=>{
 				if(oid.indexOf('@')==-1)oid=oid+'@'+opn.cloudhost;
@@ -38,25 +40,20 @@
 					new opn.App().load(opn.viewers['OS']).then((Assets)=>{
 						let os=new Assets.opnOS({parentDiv:opn.getScreen()});	
 						
+						opn.getProgress().oneMoreDone();
+				
 						let app=null;
 						
-						if(command.indexOf('/code')==0){
-							app=os.openApp({initapp:true,appID:opn.viewers['Code'],input:o});
-						}
-						else if(command.indexOf('/api')==0){
-							app=os.openApp({initapp:true,appID:opn.viewers['API'],input:oid});
+						if(command.length>1 && typeof opn.viewers[command.substring(1)]!=='undefined'){
+							app=os.openApp({initapp:true,appID:opn.viewers[command.substring(1)],input:o});
 						}else{
 							
 							if(o.getSystemProperty('OPEN')){
 								app=os.openApp({initapp:true,appID:o.getSystemProperty('OPEN'),input:oid});
 							} else if (o.getSystemProperty('CLASS')){
 								let c=o.getSystemProperty('CLASS');
-								if(c=='List'){
-									app=os.openApp({initapp:true,appID:opn.viewers['List'],input:oid});
-								}else if(c=='Image'){
-									app=os.openApp({initapp:true,appID:opn.viewers['Image'],input:oid});
-								}else if(c=='User'){
-									app=os.openApp({initapp:true,appID:opn.viewers['User'],input:oid});
+								if(typeof opn.viewers[c]!=='undefined'){
+									app=os.openApp({initapp:true,appID:opn.viewers[c],input:oid});
 								}else{
 									app=os.openApp({initapp:true,fullscreen:embed,appID:oid});
 								}
@@ -66,6 +63,10 @@
 							}
 						}
 						app.getWindow().maximize();
+						app.getProgress().whenDone().then(()=>{
+							opn.getProgress().oneMoreDone();
+							return true;
+						});
 					});
 				}).otherwise(()=>{
 					console.log('This object is not available');
@@ -81,7 +82,8 @@
 				else command=location.search.substring(end);
 				if(command.indexOf('/embed')==0)embed=true;
 				let app_name=location.search.substring(5,end);
-				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name).then((request)=>{
+				let opt=(opn.static)?{}:{method:'post'};
+				opn.http(location.href.substring(0,location.href.indexOf('?'))+'apps/'+app_name,opt).then((request)=>{
 					oid=request.responseText.split("\n")[0];
 					loadapp();
 				})
@@ -89,9 +91,15 @@
 			return;
 		}
 		if(opn.redirectServerSite){location.href=opn.redirectServerSite;return}
-		new opn.App().load(opn.landing);	
+		let app=new opn.App();app.load(opn.landing);
+		app.getProgress().whenDone().then(()=>{
+			opn.getProgress().oneMoreDone();
+			return true;
+		});
 	}
 	</script>
 </head>
-<body onload="opn.run(my_program,{loadingLogo:true})" style="margin:0px;background:#fff;color:#888;"></body>
+<body onload="opn.run(my_program,{loadingLogo:true})" style="margin:0px;background:#fff;color:#888;">
+<div style="position:absolute;inset:0px;overflow:hidden;"><div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial,sans-serif;">Connecting...</div></div>
+</body>
 </html>
