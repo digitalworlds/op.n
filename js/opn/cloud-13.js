@@ -402,6 +402,10 @@ opnCloudObjectID.prototype.getURL=function(extension){
 	return opn.hosturl+'file/'+this.toString(true)+'/'+((typeof extension!=="undefined")?extension:"");
 }
 
+opnCloudObjectID.prototype.getStreamURL=function(){
+	return this.getURL("stream?CID="+CID_COOKIE);
+}
+
 /**
  * This method returns the URL of the icon of this cloud object.
  * @return string A string with the URL of the icon of this cloud object.
